@@ -16,7 +16,7 @@ max_car_length = 5
 max_cars_per_lane = 30
 space_between_cars = 5
 grid_width = max_car_length * max_cars_per_lane
-road_length = car_length * road_length * space_between_cars
+road_length = max_car_length * max_cars_per_lane * space_between_cars
 
 grid = CanvasGrid(agent_portrayal, grid_width, grid_width, 700, 500)
 server = Server(Road,
