@@ -19,7 +19,7 @@ def agent_portrayal(agent):
 
 lanes = 5
 road_length = 100
-grid = CanvasGrid(agent_portrayal, road_length, lanes, 900, 300)
+grid = CanvasGrid(agent_portrayal, road_length-10, lanes, 900, 300)
 
 
 model_params = {"lanes": UserSettableParameter("slider", "Lanes", 5, 1, 5,
