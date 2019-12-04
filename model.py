@@ -15,22 +15,31 @@ class Road(Model):
         self.car_id = 0
         self.space_between_cars = 5
         self.grid = Grid(width=self.road_length, height=self.lanes, torus=False)
-        self.speed_colors = {1: "#FF1700", 2: "#C27910", 3: "#2EC210"}
+        self.speed_colors = {1: "#FF1700", 2: "#CB21AC", 3: "#2EC210", 4: "#2133CB", 5:"#30CB21", 6:"#000000"}
         self.car_frequency = car_frequency / 100
         self.first_run = [True] * self.lanes
 
     def step(self):
         '''Advance the model by one step.'''
         self.schedule.step()
-        for lane in range(self.lanes):
+        for i in range(self.lanes):
+            speed = randint(1, len(self.speed_colors))
+            lane = self.choose_lane(speed)
             if self.space_available(lane) and (random() < self.car_frequency):
-                max_car_speed = randint(1, len(self.speed_colors))
-                color = self.speed_colors[max_car_speed]
-                car = CarAgent(self.car_id, self, max_car_speed, color, first_run=self.first_run[lane])
+                color = self.speed_colors[speed]
+                car = CarAgent(self.car_id, self, speed, color, first_run=self.first_run[lane])
                 self.schedule.add(car)
                 self.grid.place_agent(agent=car, pos=(0, lane))
                 self.car_id += 1
                 self.first_run[lane] = False
+
+    def choose_lane(self, speed):
+        if speed <= int(len(self.speed_colors) / 2) and random() < 0.90:
+            return randint(0, int(self.lanes / 2))
+        if speed >= int(len(self.speed_colors) / 2) and random() < 0.90:
+            return randint(int(self.lanes / 2), self.lanes - 1)
+        else:
+            return randint(0, self.lanes - 1)
 
     def space_available(self, lane):
         for cell in range(0, self.space_between_cars):
