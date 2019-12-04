@@ -13,7 +13,7 @@ class Road(Model):
         self.lanes = lanes
         self.road_length = road_length
         self.car_id = 0
-        self.space_between_cars = 3
+        self.space_between_cars = 5
         self.grid = Grid(width=self.road_length, height=self.lanes, torus=False)
         self.speed_colors = {1: "#FF1700", 2: "#C27910", 3: "#2EC210"}
         self.car_frequency = car_frequency / 100

@@ -10,7 +10,7 @@ class CarAgent(Agent):
         self.first_run = first_run
 
     def advance(self):
-        if self.model.road_length <= self.pos[0] + self.get_available_space() or self.get_available_space() == 0:
+        if self.model.road_length <= self.pos[0] + self.model.space_between_cars + 1:
             self.model.grid.remove_agent(self)
             self.model.schedule.remove(self)
         else:
@@ -32,5 +32,4 @@ class CarAgent(Agent):
             if space > self.max_car_speed:
                 space = self.max_car_speed
             return space
-
         return 0
