@@ -1,6 +1,6 @@
 from mesa import Model
 from mesa.time import SimultaneousActivation
-from mesa.space import MultiGrid
+from mesa.space import Grid
 from agents import CarAgent
 from random import random, randint, choice
 
@@ -15,14 +15,15 @@ class Road(Model):
         self.car_id = 0
         self.space_between_cars = 3
         self.starting_point = 0
-        self.grid = MultiGrid(width=self.road_length, height=self.lanes, torus=False)
+        self.grid = Grid(width=self.road_length, height=self.lanes, torus=False)
         self.speed_colors = {1: "#B41A0B", 2: "#1C8B08"}
+        self.car_frequency = 0.2  # 50% per step
 
     def step(self):
         '''Advance the model by one step.'''
         self.schedule.step()
         for lane in range(self.lanes):
-            if self.space_available(lane) and (random() < 0.8):
+            if self.space_available(lane) and (random() < self.car_frequency):
                 max_car_speed = 1
                 color = self.speed_colors[max_car_speed]
                 car = CarAgent(self.car_id, self, max_car_speed, color)

@@ -3,10 +3,10 @@ from mesa.visualization.modules import CanvasGrid
 from model import Road
 from agents import CarAgent
 
+
 def agent_portrayal(agent):
     portrayal = {}
     if isinstance(agent, CarAgent):
-        portrayal = {"Shape": "circle","Filled": "true","Layer": 0,"r": 0.5}
         portrayal["Color"] = agent.color
         portrayal["Shape"] = "circle"
         portrayal["Filled"] = "true"

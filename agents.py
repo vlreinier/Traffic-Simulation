@@ -15,3 +15,6 @@ class CarAgent(Agent):
                 if self.model.grid.is_cell_empty((self.pos[0] + 1, self.pos[1])):
                     space_available += 1
             self.model.grid.move_agent(self, (self.pos[0] + space_available, self.pos[1]))
+        else:
+            self.model.grid.remove_agent(self)
+            self.model.schedule.remove(self)
