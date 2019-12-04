@@ -1,5 +1,6 @@
 from server import Server
-from mesa.visualization.modules import CanvasGrid
+from mesa.visualization.modules import CanvasGrid, ChartModule
+from mesa.visualization.UserParam import UserSettableParameter
 from model import Road
 from agents import CarAgent
 
@@ -15,17 +16,24 @@ def agent_portrayal(agent):
     return portrayal
 
 
-max_car_length = 3
 max_cars_per_lane = 20
-space_between_cars = 2
-lanes = 4
-
-road_length = max_cars_per_lane * (max_car_length + space_between_cars)
+space_between_cars = 3
+lanes = 5
+road_length = max_cars_per_lane * space_between_cars
 grid = CanvasGrid(agent_portrayal, road_length, lanes, 1000, 500)
+
+
+model_params = {"lanes": UserSettableParameter("slider", "Lanes", 2, 1, 5,
+                                                    description=""),
+                "road_length": road_length,
+                "car_frequency": UserSettableParameter("slider", "Car Frequency", 50, 10, 90, 10,
+                                                    description="")
+                }
+
 server = Server(Road,
                 [grid],
                 "Road Model",
-                {"lanes": lanes, "road_length": road_length})
+                model_params)
 server.launch(8521)
 
 
