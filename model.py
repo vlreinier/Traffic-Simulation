@@ -37,4 +37,3 @@ class Road(Model):
             if not self.grid.is_cell_empty((cell, lane)):
                 return False
         return True
-
