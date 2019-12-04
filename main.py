@@ -2,6 +2,7 @@ from server import Server
 from mesa.visualization.modules import CanvasGrid
 from model import Road
 
+
 def agent_portrayal(agent):
     portrayal = {"Shape": "circle",
                  "Filled": "true",
@@ -11,7 +12,7 @@ def agent_portrayal(agent):
     return portrayal
 
 
-grid = CanvasGrid(agent_portrayal, 10, 10, 300, 300)
+grid = CanvasGrid(agent_portrayal, 50, 50, 1000, 500)
 server = Server(Road,
                 [grid],
                 "Road Model",
