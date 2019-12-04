@@ -6,19 +6,20 @@ from random import getrandbits
 
 class Road(Model):
     """A model with some number of agents."""
-    def __init__(self, lanes, roadlength):
-        self.grid = Grid(width=roadlength, height=lanes, torus=False)
+    def __init__(self, lanes, road_length):
         self.schedule = SimultaneousActivation(self)
         self.running = True
         self.lanes = lanes
-        self.id = 0
+        self.road_length = road_length
+        self.agent_id = 0
+        self.grid = Grid(width=self.road_length, height=self.lanes, torus=False)
 
     def step(self):
         '''Advance the model by one step.'''
         self.schedule.step()
         for i in range(self.lanes):
             if getrandbits(1):
-                car = CarAgent(self.id, self)
+                car = CarAgent(self.agent_id, self)
                 self.schedule.add(car)
                 self.grid.place_agent(car, (0, i))
                 self.id += 1
