@@ -12,13 +12,16 @@ def agent_portrayal(agent):
     return portrayal
 
 
-grid = CanvasGrid(agent_portrayal, 50, 50, 1000, 500)
+car_length = 5
+road_length = 30
+grid_width = car_length * road_length
+
+grid = CanvasGrid(agent_portrayal, road_length, road_length / 2, 1000, 500)
 server = Server(Road,
                 [grid],
                 "Road Model",
-                {"lanes":2, "roadlength": 1000}
-            )
-server.port = 8521 # The default
+                {"lanes": 2, "roadlength": grid_width})
+server.port = 8521
 server.launch()
 
 
