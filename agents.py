@@ -10,21 +10,17 @@ class CarAgent(Agent):
         self.first_run = first_run
 
     def advance(self):
-        available_space = self.get_available_space()
-        if self.pos[0] + available_space < self.model.grid.width:
-            self.model.grid.move_agent(self, (self.pos[0] + available_space, self.pos[1]))
-        else:
+        if self.model.road_length <= self.pos[0] + self.get_available_space() or self.get_available_space() == 0:
             self.model.grid.remove_agent(self)
             self.model.schedule.remove(self)
+        else:
+            self.model.grid.move_agent(self, (self.pos[0] + self.get_available_space(), self.pos[1]))
 
     def get_available_space(self):
-        # if first run always replace with max speed
+        space = 0
         if self.first_run:
             return self.max_car_speed
-
-        # else calculate available space
-        space = 0
-        for i in range(1, 10):
+        for i in range(1, self.model.road_length - self.pos[0]):
             if self.model.grid.is_cell_empty((self.pos[0] + i, self.pos[1])): space += 1
             else: break
         if space - self.model.space_between_cars > 0:
