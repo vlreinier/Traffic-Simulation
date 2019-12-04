@@ -9,18 +9,17 @@ def agent_portrayal(agent):
     portrayal = {}
     if isinstance(agent, CarAgent):
         portrayal["Color"] = agent.color
-        portrayal["Shape"] = "circle"
+        portrayal["Shape"] = "rect"
         portrayal["Filled"] = "true"
         portrayal["Layer"] = 0
-        portrayal["r"] = 0.9
+        portrayal["w"] = 0.9
+        portrayal["h"] = 0.1
     return portrayal
 
 
-max_cars_per_lane = 20
-space_between_cars = 3
 lanes = 5
-road_length = max_cars_per_lane * space_between_cars
-grid = CanvasGrid(agent_portrayal, road_length, lanes, 1000, 500)
+road_length = 100
+grid = CanvasGrid(agent_portrayal, road_length, lanes, 1000, 300)
 
 
 model_params = {"lanes": UserSettableParameter("slider", "Lanes", 2, 1, 5,
