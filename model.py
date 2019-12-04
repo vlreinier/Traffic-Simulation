@@ -1,6 +1,9 @@
 from mesa import Agent, Model
+from server import Server
+from mesa.visualization.modules import CanvasGrid
+
 from mesa.time import SimultaneousActivation
-from mesa.space import ContinuousSpace
+from mesa.space import MultiGrid
 from mesa.datacollection import DataCollector
 from mesa.batchrunner import BatchRunner
 
@@ -10,90 +13,51 @@ import numpy as np
 class Road(Model):
     """A model with some number of agents."""
     def __init__(self, lanes, roadlength):
-        self.grid = ContinuousSpace(x_max=roadlength, y_max=lanes, torus=False, x_min=0, y_min=0)
-        import pdb; pdb.set_trace()
+        self.grid = MultiGrid(width=roadlength, height=lanes, torus=False)
         self.schedule = SimultaneousActivation(self)
         self.running = True
         self.id = 0
-
-        # # data collector
-        # self.datacollector = DataCollector(
-        #     model_reporters={"Gini": compute_gini},  # `compute_gini` defined above
-        #     agent_reporters={"Wealth": "wealth"})
+        car = CarAgent(self.id, self)
+        self.schedule.add(car)
+        self.grid.place_agent(car, (0, 0))
+        self.id += 1
 
 
     def step(self):
         '''Advance the model by one step.'''
         # self.datacollector.collect(self)
-        car = CarAgent(self.id, self)
-        self.schedule.add(car)
-        self.grid.place_agent(car, (1, 1))
         self.schedule.step()
-        self.id += 1
+
+        print("test")
 
 class CarAgent(Agent):
     """ An agent with fixed initial wealth."""
     def __init__(self, unique_id, model):
         super(CarAgent, self).__init__(unique_id, model)
-        self.wealth = 1
 
     def advance(self):
-        self.model.grid.move_agent(self, (self.pos[0] + 1, self.pos[1]))
-
-    def move(self):
-        self.advance()
-
-    def step(self):
-        self.move()
+        if self.pos[0] + 2 < self.model.grid.width:
+            self.model.grid.move_agent(self, (self.pos[0] + 1, self.pos[1]))
 
 
-road = Road(1, 10)
-for i in range(10):
-    road.step()
 
-# agent_counts = np.zeros((model.grid.width, model.grid.height))
-# for cell in model.grid.coord_iter():
-#     cell_content, x, y = cell
-#     agent_count = len(cell_content)
-#     agent_counts[x][y] = agent_count
-# plt.imshow(agent_counts, interpolation='nearest')
-# plt.colorbar()
-# plt.show()
+def agent_portrayal(agent):
+    portrayal = {"Shape": "circle",
+                 "Filled": "true",
+                 "Layer": 0,
+                 "Color": "red",
+                 "r": 0.5}
+    return portrayal
 
 
-# # Data collector
-# gini = model.datacollector.get_model_vars_dataframe()
-# plt.plot(gini)
-# plt.show()
+grid = CanvasGrid(agent_portrayal, 10, 10, 300, 300)
+server = Server(Road,
+                [grid],
+                "Money Model",
+                {"lanes":1, "roadlength": 1000}
+            )
+server.port = 8521 # The default
+server.launch()
 
-# agent_wealth = model.datacollector.get_agent_vars_dataframe()
-# print(agent_wealth)
 
 
-# batch runner
-# one_agent_wealth = agent_wealth.xs(14, level="AgentID")
-# plt.plot(one_agent_wealth.Wealth)
-# #plt.show()
-#
-#
-# fixed_params = {
-#     "width": 10,
-#     "height": 10
-# }
-# variable_params = {"N": range(10, 500, 10)}
-#
-# # The variables parameters will be invoke along with the fixed parameters allowing for either or both to be honored.
-# batch_run = BatchRunner(
-#     MoneyModel,
-#     variable_params,
-#     fixed_params,
-#     iterations=5,
-#     max_steps=100,
-#     model_reporters={"Gini": compute_gini}
-# )
-#
-# batch_run.run_all()
-#
-# run_data = batch_run.get_model_vars_dataframe()
-# plt.scatter(run_data.N, run_data.Gini)
-# plt.show()
