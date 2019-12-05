@@ -16,11 +16,10 @@ def agent_portrayal(agent):
         portrayal["h"] = 0.1
     if isinstance(agent, Obstacle):
         portrayal["Color"] = agent.color
-        portrayal["Shape"] = 'rect'
+        portrayal["Shape"] = 'circle'
         portrayal["Filled"] = "true"
         portrayal["Layer"] = 0
-        portrayal["w"] = 0.9
-        portrayal["h"] = 0.1
+        portrayal["r"] = 0.9
     return portrayal
 
 

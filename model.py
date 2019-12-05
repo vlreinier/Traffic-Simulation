@@ -16,10 +16,10 @@ class Road(Model):
         self.obstacle_id = 0
         self.space_between_cars = space_between_cars
         self.grid = Grid(width=self.road_length, height=self.lanes, torus=False)
-        self.speed_colors = {1: "#CB21AC", 2: "#2EC210", 3: "#2133CB", 4:"#30CB21", 5:"#000000"}
+        self.speed_colors = {1: "#3F9D3E", 2: "#28716D", 3: "#482871", 4:"#71284E", 5:"#000000"}
         self.car_frequency = car_frequency / 100
         self.obstacles = obstacles
-        self.obstacle_color = '#808080'
+        self.obstacle_color = '#FF0000'
 
     def step(self):
         '''Advance the model by one step.'''
@@ -38,6 +38,7 @@ class Road(Model):
     def place_obstacles(self):
         if len(self.obstacles) > 0:
             for i in self.obstacles:
+                if not i[1] in list(range(self.lanes)): continue
                 obstacle = Obstacle(self, self.obstacle_id, self.obstacle_color)
                 self.grid.place_agent(agent=obstacle, pos=(i[0], i[1]))
                 self.obstacle_id += 1
