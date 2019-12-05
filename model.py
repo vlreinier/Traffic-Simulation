@@ -7,7 +7,7 @@ from random import random, randint
 
 class Road(Model):
     """A model with some number of agents."""
-    def __init__(self, lanes, road_length, car_frequency, space_between_cars, obstacles = [(45, 0),(40, 0)]):
+    def __init__(self, lanes, road_length, car_frequency, space_between_cars, obstacles = [(45, 0),(40, 0), (42, 1)]):
         self.schedule = SimultaneousActivation(self)
         self.running = True
         self.lanes = lanes
@@ -18,7 +18,6 @@ class Road(Model):
         self.grid = Grid(width=self.road_length, height=self.lanes, torus=False)
         self.speed_colors = {1: "#CB21AC", 2: "#2EC210", 3: "#2133CB", 4:"#30CB21", 5:"#000000"}
         self.car_frequency = car_frequency / 100
-        self.first_run = [True] * self.lanes
         self.obstacles = obstacles
         self.obstacle_color = '#808080'
 
@@ -30,11 +29,10 @@ class Road(Model):
             lane = self.choose_lane(speed)
             if self.space_available(lane) and (random() < self.car_frequency):
                 color = self.speed_colors[speed]
-                car = CarAgent(self.car_id, self, speed, color, first_run=self.first_run[lane])
+                car = CarAgent(self.car_id, self, speed, color)
                 self.schedule.add(car)
                 self.grid.place_agent(agent=car, pos=(0, lane))
                 self.car_id += 1
-                self.first_run[lane] = False
         self.place_obstacles()
 
     def place_obstacles(self):
