@@ -1,6 +1,5 @@
 from mesa import Agent
 
-
 class CarAgent(Agent):
     """ An agent with fixed initial wealth."""
     def __init__(self, unique_id, model, max_car_speed, color):
@@ -16,15 +15,30 @@ class CarAgent(Agent):
 
     def switch_lane(self):
         spacer = int(self.model.space_between_cars / 2)
+        if self.pos[1] != 0:
+            self.move_down(spacer)
+        if self.space_in_front() < self.max_car_speed and self.pos[1] < self.model.lanes-1 and self.pos[0]-spacer > 0:
+            self.move_up(spacer)
+
+    def move_down(self, spacer):
         switch_locations = []
         switch_lane = True
-        if self.space_in_front() < self.max_car_speed and self.pos[1] < self.model.lanes-1 and self.pos[0]-spacer > 0:
-            for cell in range(self.pos[0] - spacer - 1, self.pos[0] + spacer + 1):
-                if not self.model.grid.is_cell_empty((cell, self.pos[1] + 1)):
-                    switch_lane = False
-                switch_locations.append((cell, self.pos[1] + 1))
-            if switch_lane and len(switch_locations) > 0:
-                self.model.grid.move_agent(self, (switch_locations[int(len(switch_locations) / 2)]))
+        for cell in range(self.pos[0] - spacer - 1, self.pos[0] + spacer + 1):
+            if not self.model.grid.is_cell_empty((cell, self.pos[1] - 1)):
+                switch_lane = False
+            switch_locations.append((cell, self.pos[1] - 1))
+        if switch_lane and len(switch_locations) > 0:
+            self.model.grid.move_agent(self, (switch_locations[int(len(switch_locations) / 2)]))
+
+    def move_up(self, spacer):
+        switch_locations = []
+        switch_lane = True
+        for cell in range(self.pos[0] - spacer - 1, self.pos[0] + spacer + 1):
+            if not self.model.grid.is_cell_empty((cell, self.pos[1] + 1)):
+                switch_lane = False
+            switch_locations.append((cell, self.pos[1] + 1))
+        if switch_lane and len(switch_locations) > 0:
+            self.model.grid.move_agent(self, (switch_locations[int(len(switch_locations) / 2)]))
 
     def move_forward(self):
         if self.model.road_length <= self.pos[0] + self.model.space_between_cars + 1:
