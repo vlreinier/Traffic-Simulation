@@ -7,7 +7,7 @@ from random import random, randint
 
 class Road(Model):
     """A model with some number of agents."""
-    def __init__(self, lanes, road_length, car_frequency, space_between_cars, obstacles = [(45, 0),(40, 0), (42, 1)]):
+    def __init__(self, lanes, road_length, car_frequency, space_between_cars, obstacles = [(40, 4),(45, 3)]):
         self.schedule = SimultaneousActivation(self)
         self.running = True
         self.lanes = lanes
