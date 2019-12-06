@@ -2,12 +2,12 @@ from server import Server
 from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.UserParam import UserSettableParameter
 from model import Road
-from agents import CarAgent, Obstacle
+from agents import Car, Obstacle
 
 
 def agent_portrayal(agent):
     portrayal = {}
-    if isinstance(agent, CarAgent):
+    if isinstance(agent, Car):
         portrayal["Color"] = agent.color
         portrayal["Shape"] = "rect"
         portrayal["Filled"] = "true"
@@ -15,7 +15,7 @@ def agent_portrayal(agent):
         portrayal["w"] = 0.9
         portrayal["h"] = 0.1
     if isinstance(agent, Obstacle):
-        portrayal["Color"] = agent.color
+        portrayal["Color"] = 'red'
         portrayal["Shape"] = 'circle'
         portrayal["Filled"] = "true"
         portrayal["Layer"] = 0
@@ -23,16 +23,18 @@ def agent_portrayal(agent):
     return portrayal
 
 
-lanes = 5
+lanes = 10
 road_length = 100
-space_between_cars = 2
-grid = CanvasGrid(agent_portrayal, road_length-10, lanes, 900, 300)
+space_between_cars = 3
+grid = CanvasGrid(agent_portrayal, road_length, lanes, 900, 300)
 
-model_params = {"lanes": UserSettableParameter("slider", "Lanes", 3, 1, 5,
+model_params = {"lanes": UserSettableParameter("slider", "Lanes", 3, 1, lanes,
                                                     description=""),
                 "road_length": road_length,
                 "space_between_cars": space_between_cars,
-                "car_frequency": UserSettableParameter("slider", "Car Frequency", 0.3, 0.05, 0.95, 0.05,
+                "obstacles": UserSettableParameter("slider", "Random Obstacles", 1, 0, 10, 1,
+                                                    description=""),
+                "car_frequency": UserSettableParameter("slider", "Car Increase Frequency", 0.3, 0.05, 0.95, 0.05,
                                                     description="")
                 }
 

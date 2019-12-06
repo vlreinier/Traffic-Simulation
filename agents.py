@@ -1,29 +1,33 @@
 from mesa import Agent
 
-class CarAgent(Agent):
-    def __init__(self, unique_id, model, max_car_speed, color):
-        super(CarAgent, self).__init__(unique_id, model)
+class Car(Agent):
+    def __init__(self, unique_id, model, max_car_speed, color, type):
+        """Constructor for car agent"""
+        super(Car, self).__init__(unique_id, model)
         self.max_car_speed = max_car_speed
         self.color = color
-        self.switching_lanes = False
-        self.available_space = 0
         self.last_overtake = 0
+        self.type = type
 
     def advance(self):
         self.switch_lane()
         self.move_forward()
 
-        self.last_overtake += 1
-        if self.last_overtake == 4:
-            self.last_overtake = 0
-
     def switch_lane(self):
-        spacer = int(self.model.space_between_cars / 2)
+        if type == 'car':
+            pass
+        if type == 'truck':
+            pass
+        min_spacer = int(self.model.space_between_cars / 2)
         if self.last_overtake == 0:
             if self.pos[1] != 0:
                 self.move_down(spacer)
             if self.space_in_front() < self.max_car_speed and self.pos[1] < self.model.lanes-1 and self.pos[0]-spacer > 0:
                 self.move_up(spacer)
+        else:
+            self.last_overtake += 1
+            if self.last_overtake == 4:
+                self.last_overtake = 0
 
     def move_down(self, spacer):
         switch_locations = []
@@ -46,16 +50,16 @@ class CarAgent(Agent):
             self.model.grid.move_agent(self, (switch_locations[int(len(switch_locations) / 2)]))
 
     def move_forward(self):
-        if self.model.road_length <= self.pos[0] + self.model.space_between_cars + 1:
+        available_space = self.get_available_space()
+        if not available_space:
             self.model.grid.remove_agent(self)
             self.model.schedule.remove(self)
         else:
-            self.available_space = self.get_available_space()
-            self.model.grid.move_agent(self, (self.pos[0] + self.available_space, self.pos[1]))
+            self.model.grid.move_agent(self, (self.pos[0] + available_space, self.pos[1]))
 
     def space_in_front(self):
         space = 0
-        for i in range(1, self.model.road_length - self.pos[0]):
+        for i in range(1, self.model.road_length - self.pos[0]):  # remaining cells until end road
             if self.model.grid.is_cell_empty((self.pos[0] + i, self.pos[1])):
                 space += 1
             else:
@@ -64,7 +68,9 @@ class CarAgent(Agent):
 
     def get_available_space(self):
         space = self.space_in_front()
-        if space > 0 and space > self.max_car_speed:
+        if self.model.road_length <= self.pos[0] + self.model.space_between_cars + 1:
+            return False
+        elif space > 0 and space > self.max_car_speed:
             return self.max_car_speed
         elif space > 0:
             return space
@@ -73,6 +79,6 @@ class CarAgent(Agent):
 
 
 class Obstacle(Agent):
-    def __init__(self, unique_id, model, color):
+    """Constructor for obstacle agent"""
+    def __init__(self, unique_id, model):
         super(Obstacle, self).__init__(unique_id, model)
-        self.color = color
