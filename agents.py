@@ -18,7 +18,7 @@ class Car(Agent):
             pass
         if type == 'truck':
             pass
-        min_spacer = int(self.model.space_between_cars / 2)
+        spacer = int(self.model.space_between_cars / 2)
         if self.last_overtake == 0:
             if self.pos[1] != 0:
                 self.move_down(spacer)
