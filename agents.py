@@ -18,6 +18,9 @@ class Car(Agent):
             pass
         if type == 'truck':
             pass
+        if type == 'bike':
+            pass
+
         spacer = int(self.model.space_between_cars / 2)
         if self.last_overtake == 0:
             if self.pos[1] != 0:

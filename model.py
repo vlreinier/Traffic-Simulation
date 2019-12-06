@@ -15,7 +15,7 @@ class Road(Model):
         self.space_between_cars = space_between_cars
         self.obstacles = obstacles
         self.running = True
-        self.types = ['car','truck']
+        self.types = ['car', 'truck', 'bike']
         self.car_id = 0
         self.obstacle_id = 0
         self.grid = Grid(width=self.road_length, height=self.lanes, torus=False)
