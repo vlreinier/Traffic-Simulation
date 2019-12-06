@@ -2,12 +2,12 @@ from server import Server
 from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.UserParam import UserSettableParameter
 from model import Road
-from agents import Car, Obstacle
+from agents import Vehicle, Obstacle
 
 
 def agent_portrayal(agent):
     portrayal = {}
-    if isinstance(agent, Car):
+    if isinstance(agent, Vehicle):
         portrayal["Color"] = agent.color
         portrayal["Shape"] = "rect"
         portrayal["Filled"] = "true"
@@ -25,16 +25,16 @@ def agent_portrayal(agent):
 
 lanes = 10
 road_length = 100
-space_between_cars = 3
+space_between_vehicles = 5
 grid = CanvasGrid(agent_portrayal, road_length, lanes, 900, 300)
 
 model_params = {"lanes": UserSettableParameter("slider", "Lanes", 3, 1, lanes,
                                                     description=""),
                 "road_length": road_length,
-                "space_between_cars": space_between_cars,
+                "space_between_vehicles": space_between_vehicles,
                 "obstacles": UserSettableParameter("slider", "Random Obstacles", 1, 0, 10, 1,
                                                     description=""),
-                "car_frequency": UserSettableParameter("slider", "Car Increase Frequency", 0.3, 0.05, 0.95, 0.05,
+                "vehicle_frequency": UserSettableParameter("slider", "Vehicle Frequency", 0.3, 0.05, 0.95, 0.05,
                                                     description="")
                 }
 

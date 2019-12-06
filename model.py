@@ -1,29 +1,31 @@
 from mesa import Model
 from mesa.time import SimultaneousActivation
 from mesa.space import Grid
-from agents import Car, Obstacle
-from random import random, randint, choice
-
+from agents import Vehicle, Obstacle
+from random import random, randint
+import numpy as np
 
 class Road(Model):
-    def __init__(self, lanes, road_length, car_frequency, space_between_cars, obstacles):
-        """Constructor for model"""
+    def __init__(self, lanes, road_length, vehicle_frequency, space_between_vehicles, obstacles):
+        """Constructor for the Road, the model for this agent-based simulation, 'housing' the agents,
+        and setting up and configuring the simulation"""
         self.schedule = SimultaneousActivation(self)
         self.lanes = lanes
         self.road_length = road_length
-        self.car_frequency = car_frequency
-        self.space_between_cars = space_between_cars
+        self.vehicle_frequency = vehicle_frequency
+        self.space_between_vehicles = space_between_vehicles
         self.obstacles = obstacles
         self.running = True
-        self.types = ['car', 'truck', 'bike']
-        self.car_id = 0
+        # traffic types with: [probability, speed (in terms of cells), color]
+        self.types = {'Truck': [0.2, 1, 'grey'], 'Car': [0.75, 2, 'blue'], 'Bike': [0.05, 3, 'green']}
+        self.vehicle_id = 0
         self.obstacle_id = 0
         self.grid = Grid(width=self.road_length, height=self.lanes, torus=False)
-        self.speed_colors = {1: "black", 2: "brown", 3: "blue", 4:"orange", 5:"green"}
+        self.speed_colors = {1: "black", 2: "brown", 3: "blue"}
         self.place_obstacles()
 
     def place_obstacles(self):
-        """Place obstacles on grid"""
+        """Places given number of random obstacles on grid"""
         for obstacle in range(self.obstacles):
             cell = randint(int(self.road_length / 4), int(self.road_length - self.road_length / 4))
             lane = randint(0, self.lanes - 1)
@@ -41,20 +43,31 @@ class Road(Model):
 
     def lane_space(self, lane):
         """Calculates if space in lane for starting cars"""
-        for cell in range(0, self.space_between_cars):
+        for cell in range(0, self.space_between_vehicles):
             if not self.grid.is_cell_empty(pos=(cell, lane)):
                 return False
         return True
+
+    def pick_random_traffic_type(self, type_dict):
+        """Picks traffic type from dictionary where each type has its own chance of appearance"""
+        types = []
+        probabilities = []
+        for type, info in type_dict.items():
+            types.append(type)
+            probabilities.append(info[0])
+        return np.random.choice(types, 1, p=probabilities)[0]
 
     def step(self):
         """Step function for simultaneous activation agents"""
         self.schedule.step()
         for lane in range(self.lanes):
-            if random() < self.car_frequency:
-                speed = randint(min(self.speed_colors), len(self.speed_colors))
+            if random() < self.vehicle_frequency:
+                type = self.pick_random_traffic_type(self.types)
+                speed = self.types[type][1]
                 lane = self.choose_lane(speed=speed)
+                color = self.types[type][2]
                 if self.lane_space(lane=lane):
-                    car = Car(self.car_id, self, speed, color=self.speed_colors[speed], type=choice(self.types))
-                    self.schedule.add(car)
-                    self.grid.place_agent(agent=car, pos=(0, lane))
-                    self.car_id += 1
+                    vehicle = Vehicle(type+str(self.vehicle_id), self, speed, color, type)
+                    self.schedule.add(vehicle)
+                    self.grid.place_agent(agent=vehicle, pos=(0, lane))
+                    self.vehicle_id += 1
