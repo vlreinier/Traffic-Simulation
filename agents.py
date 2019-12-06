@@ -23,9 +23,7 @@ class Vehicle(Agent):
 
     def get_available_space(self):
         space = self.space_in_front()
-        if self.model.road_length <= self.pos[0] + self.model.space_between_vehicles + 1:
-            return False
-        elif space > 0 and space > self.max_vehicle_speed:
+        if space > 0 and space > self.max_vehicle_speed:
             return self.max_vehicle_speed
         elif space > 0:
             return space
@@ -37,26 +35,39 @@ class Vehicle(Agent):
         spacer = int(self.model.space_between_vehicles / 2)
         space_in_front = self.space_in_front()
         if space_in_front < self.max_vehicle_speed:
-            space_below, locations_below = self.space_below(spacer)
-            space_above, locations_above = self.space_above(spacer)
 
-            if space_below and space_above and (self.type == "Truck" or self.type == "Car") and self.pos[1] != 0:
-                self.move_down(space_below, locations_below)
-            elif space_below and space_above and self.type == "Bike":
+            if self.pos[1] != 0:
+                space_below, location_below = self.space_below(spacer)
+            else:
+                space_below, location_below = False, False
+            if self.pos[1]+1 < self.model.lanes-1:
+                space_above, location_above = self.space_above(spacer)
+            else:
+                space_above, location_above = False, False
+
+            if space_below and space_above and (self.type == "Truck" or self.type == "Car") and \
+                (self.last_overtake == 0 or space_in_front == 0):
                 self.last_overtake += 1
-                if (self.last_overtake == 0 or space_in_front == 0) and self.pos[1] < self.model.lanes-1:
-                    self.move_up(space_above, locations_above)
-            elif space_above and not space_below and self.pos[1] < self.model.lanes-1 and self.pos[0]-spacer > 0:
-                self.move_up(space_above, locations_above)
-            elif space_below and not space_above and self.pos[1] != 0:
-                self.move_down(space_below, locations_below)
+                self.move_down(space_below, location_below)
+            elif space_below and space_above and (self.type == "Bike") and \
+                (self.last_overtake == 0 or space_in_front == 0):
+                    self.last_overtake += 1
+                    self.move_up(space_above, location_above)
+            elif space_above and (not space_below) and \
+                (self.last_overtake == 0 or space_in_front == 0):
+                self.last_overtake += 1
+                self.move_up(space_above, location_above)
+            elif space_below and (not space_above) and \
+                (self.last_overtake == 0 or space_in_front == 0):
+                self.last_overtake += 1
+                self.move_down(space_below, location_below)
 
         if self.last_overtake == 4:
             self.last_overtake = 0
 
         #// Move forward if possible
         available_space = self.get_available_space()
-        if not available_space:
+        if self.model.road_length <= self.pos[0] + self.model.space_between_vehicles + 1:
             self.model.grid.remove_agent(self)
             self.model.schedule.remove(self)
         else:
@@ -69,7 +80,7 @@ class Vehicle(Agent):
             if not self.model.grid.is_cell_empty((cell, self.pos[1] + 1)):
                 switch_lane = False
             switch_locations.append((cell, self.pos[1] + 1))
-        return switch_lane, switch_locations
+        return switch_lane, switch_locations[int(len(switch_locations) / 2)]
 
     def space_below(self, spacer):
         switch_locations = []
@@ -78,15 +89,15 @@ class Vehicle(Agent):
             if not self.model.grid.is_cell_empty((cell, self.pos[1] - 1)):
                 switch_lane = False
             switch_locations.append((cell, self.pos[1] - 1))
-        return switch_lane, switch_locations
+        return switch_lane, switch_locations[int(len(switch_locations) / 2)]
 
-    def move_up(self, switch_lane, switch_locations):
-        if switch_lane and len(switch_locations) > 0:
-            self.model.grid.move_agent(self, (switch_locations[int(len(switch_locations) / 2)]))
+    def move_up(self, switch_lane, switch_location):
+        if switch_lane:
+            self.model.grid.move_agent(self, switch_location)
 
-    def move_down(self, switch_lane, switch_locations):
-        if switch_lane and len(switch_locations) > 0:
-            self.model.grid.move_agent(self, (switch_locations[int(len(switch_locations) / 2)]))
+    def move_down(self, switch_lane, switch_location):
+        if switch_lane:
+            self.model.grid.move_agent(self, switch_location)
 
 
 class Obstacle(Agent):
