@@ -1,26 +1,25 @@
 from mesa import Agent
 
 class CarAgent(Agent):
-    """ An agent with fixed initial wealth."""
     def __init__(self, unique_id, model, max_car_speed, color):
         super(CarAgent, self).__init__(unique_id, model)
         self.max_car_speed = max_car_speed
         self.color = color
         self.switching_lanes = False
         self.available_space = 0
-        self.same_lane = 0
+        self.last_overtake = 0
 
     def advance(self):
         self.switch_lane()
         self.move_forward()
 
-        self.same_lane += 1
-        if self.same_lane == 4:
-            self.same_lane = 0
+        self.last_overtake += 1
+        if self.last_overtake == 4:
+            self.last_overtake = 0
 
     def switch_lane(self):
         spacer = int(self.model.space_between_cars / 2)
-        if self.same_lane == 0:
+        if self.last_overtake == 0:
             if self.pos[1] != 0:
                 self.move_down(spacer)
             if self.space_in_front() < self.max_car_speed and self.pos[1] < self.model.lanes-1 and self.pos[0]-spacer > 0:

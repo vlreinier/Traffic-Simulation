@@ -11,7 +11,6 @@ from mesa.visualization.ModularVisualization import ModularServer
 
 class Server(ModularServer):
     def launch(self, port=None):
-        """ Run the app. """
         if port is not None:
             self.port = port
         url = 'http://127.0.0.1:{PORT}'.format(PORT=self.port)
