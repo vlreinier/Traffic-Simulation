@@ -17,7 +17,7 @@ class Road(Model):
         self.obstacles = obstacles
         self.running = True
         # traffic types with: [probability, speed (in terms of cells), color]
-        self.types = {'Truck': [0.2, 1, 'grey'], 'Car': [0.75, 2, 'blue'], 'Bike': [0.05, 3, 'green']}
+        self.types = {'Truck': [0.3, 1, 'grey'], 'Car': [0.5, 2, 'blue'], 'Bike': [0.2, 3, 'green']}
         self.vehicle_id = 0
         self.obstacle_id = 0
         self.grid = Grid(width=self.road_length, height=self.lanes, torus=False)
