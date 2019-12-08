@@ -21,7 +21,6 @@ class Road(Model):
         self.vehicle_id = 0
         self.obstacle_id = 0
         self.grid = Grid(width=self.road_length, height=self.lanes, torus=False)
-        self.speed_colors = {1: "black", 2: "brown", 3: "blue"}
         self.place_obstacles()
 
     def place_obstacles(self):
@@ -34,9 +33,9 @@ class Road(Model):
 
     def choose_lane(self, speed):
         """Cars choose a lane by their speed"""
-        if speed <= int(len(self.speed_colors) / 2) and random() < 0.80:  # 80% chance slow cars start on right lanes
+        if speed <= int(len(self.types) / 2) and random() < 0.80:  # 80% chance slow cars start on right lanes
             return randint(0, int(self.lanes / 2))
-        if speed >= int(len(self.speed_colors) / 2) and random() < 0.80:  # 80% chance fast cars start on left lanes
+        if speed >= int(len(self.types) / 2) and random() < 0.80:  # 80% chance fast cars start on left lanes
             return randint(int(self.lanes / 2), self.lanes - 1)
         else:
             return randint(0, self.lanes - 1)
