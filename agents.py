@@ -42,6 +42,7 @@ class Vehicle(Agent):
 
     def advance(self):
         #// Move up or down if possible
+        # Get space in front and spacer for changing lanes
         space_in_front = self.get_available_space()
         spacer = int(self.model.space_between_vehicles / 2)
 
@@ -66,15 +67,14 @@ class Vehicle(Agent):
                 switch_lane = location_below
         elif self.type == "Truck" and self.last_move == 0 and space_below:
             switch_lane = location_below
-
         self.last_move += 1
         if self.last_move == 7:
             self.last_move = 0
+
+        #// Else move forward
         if switch_lane:
             self.move_vehicle(switch_lane)
-
-        # // Move forward if possible
-        if not switch_lane:
+        else:
             if self.model.road_length <= self.pos[0] + self.model.space_between_vehicles + 1:
                 self.model.grid.remove_agent(self)
                 self.model.schedule.remove(self)
