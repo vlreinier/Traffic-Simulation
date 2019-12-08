@@ -1,6 +1,5 @@
 from mesa import Agent
 from random import random, choice, randint
-from math import floor
 
 class Vehicle(Agent):
     def __init__(self, unique_id, model, max_vehicle_speed, color, type):
@@ -8,12 +7,8 @@ class Vehicle(Agent):
         super(Vehicle, self).__init__(unique_id, model)
         self.max_vehicle_speed = max_vehicle_speed
         self.color = color
-        self.min_overtake = 4
         self.type = type
-        self.last_down_move = 0
-
-    def advance(self):
-        self.vehicle_action()
+        self.last_move = 0
 
     def space_in_front(self):
         space = 0
@@ -33,46 +28,6 @@ class Vehicle(Agent):
         else:
             return 0
 
-    def vehicle_action(self):
-        #// Move up or down if possible
-        space_in_front = self.get_available_space()
-        spacer = floor(self.model.space_between_vehicles / 2)
-
-        #// Check if there is any space to move up or down
-        if self.pos[1] != 0:  # if lane is not bottom lane
-            space_below, location_below = self.space_neighbour_lane(spacer, -1)
-        else:
-            space_below, location_below = False, False
-        if self.pos[1]+1 < self.model.lanes-1:  # if lane is not top lane
-            space_above, location_above = self.space_neighbour_lane(spacer, 1)
-        else:
-            space_above, location_above = False, False
-
-        # // If statements to determine vehicle behaviour
-        movement = False
-        if space_below and (self.pos[1] > int(self.model.lanes / 2)) and self.last_down_move == 0:
-            movement = location_below
-
-        elif space_above and not space_below and self.last_down_move == 0 and self.last_down_move == 0:
-            movement = location_above
-
-        elif space_below and not space_above and self.last_down_move == 0 and self.last_down_move == 0:
-            movement = location_below
-
-        if movement:
-            self.move_vehicle(movement)
-
-        if self.last_down_move == 4:
-            self.last_down_move = 0
-
-        if not movement:
-            #// Move forward if possible
-            if self.model.road_length <= self.pos[0] + self.model.space_between_vehicles + 1:
-                self.model.grid.remove_agent(self)
-                self.model.schedule.remove(self)
-            else:
-                self.move_vehicle((self.pos[0] + space_in_front, self.pos[1]))
-
     def space_neighbour_lane(self, spacer, lane):
         switch_locations = []
         switch_lane = True
@@ -84,6 +39,47 @@ class Vehicle(Agent):
 
     def move_vehicle(self, switch_location):
         self.model.grid.move_agent(self, switch_location)
+
+    def advance(self):
+        #// Move up or down if possible
+        space_in_front = self.get_available_space()
+        spacer = int(self.model.space_between_vehicles / 2)
+
+        #// Check if there is any space to move up or down
+        if self.pos[1] != 0:  # if lane is not bottom lane
+            space_below, location_below = self.space_neighbour_lane(spacer, -1)
+        else:
+            space_below, location_below = False, False
+        if self.pos[1] < self.model.lanes -1:  # if lane is not top lane
+            space_above, location_above = self.space_neighbour_lane(spacer, 1)
+        else:
+            space_above, location_above = False, False
+
+        # // If statements to determine vehicle behaviour
+        switch_lane = False
+        if (space_in_front < self.max_vehicle_speed) and self.last_move == 0:
+            if space_above and self.type in ['Bike', 'Car'] and random() < 0.5:
+                switch_lane = location_above
+            elif space_above and not space_below and self.type in ['Truck']:
+                switch_lane = location_above
+            elif space_below:
+                switch_lane = location_below
+        elif self.type == "Truck" and self.last_move == 0 and space_below:
+            switch_lane = location_below
+
+        self.last_move += 1
+        if self.last_move == 7:
+            self.last_move = 0
+        if switch_lane:
+            self.move_vehicle(switch_lane)
+
+        # // Move forward if possible
+        if not switch_lane:
+            if self.model.road_length <= self.pos[0] + self.model.space_between_vehicles + 1:
+                self.model.grid.remove_agent(self)
+                self.model.schedule.remove(self)
+            else:
+                self.move_vehicle((self.pos[0] + space_in_front, self.pos[1]))
 
 
 class Obstacle(Agent):
