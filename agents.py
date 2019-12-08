@@ -9,6 +9,7 @@ class Vehicle(Agent):
         self.color = color
         self.type = type
         self.last_move = 0
+        self.same_lane = 0
 
     def space_in_front(self):
         space = 0
@@ -58,29 +59,32 @@ class Vehicle(Agent):
 
         # // If statements to determine vehicle behaviour
         switch_lane = False
-        if (space_in_front < self.max_vehicle_speed) and self.last_move == 0:
+        if (space_in_front < self.max_vehicle_speed) and \
+                (self.last_move == 0 or (space_in_front == 0 and self.type in ['Bike', 'Car'])) :
             if space_above and self.type in ['Bike', 'Car'] and random() < 0.5:
                 switch_lane = location_above
             elif space_above and not space_below and self.type in ['Truck']:
                 switch_lane = location_above
-            elif space_below:
+            elif space_below and (random() < 0.7 or space_in_front == 0):
                 switch_lane = location_below
         elif self.type == "Truck" and self.last_move == 0 and space_below:
             switch_lane = location_below
-        self.last_move += 1
-        if self.last_move == 7:
-            self.last_move = 0
 
         #// Else move forward
         if switch_lane:
+            self.same_lane = 0
             self.move_vehicle(switch_lane)
         else:
             if self.model.road_length <= self.pos[0] + self.model.space_between_vehicles + 1:
                 self.model.grid.remove_agent(self)
                 self.model.schedule.remove(self)
             else:
+                self.same_lane += 1
                 self.move_vehicle((self.pos[0] + space_in_front, self.pos[1]))
 
+        self.last_move += 1
+        if self.last_move == 8:
+            self.last_move = 0
 
 class Obstacle(Agent):
     """Constructor for obstacle agent"""
