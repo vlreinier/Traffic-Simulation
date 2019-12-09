@@ -19,7 +19,7 @@ class Road(Model):
         self.running = True
         # traffic types with: [probability and speed range (in terms of cells)]
         self.types = {'🚚': [0.25, (1, 2)], '🚌': [0.1, (1, 3)], '🚗': [0.55, (2, 5)], '🚲': [0.1, (4, 5)]}
-        self.max_type_speed = max([speed for type in self.types for speed in type[0][1]])
+        self.max_type_speed = max([speed for type in self.types for speed in self.types[type][1]])
         self.vehicle_id = 0
         self.obstacle_id = 0
         self.grid = Grid(width=self.road_length, height=self.lanes, torus=False)
