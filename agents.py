@@ -10,6 +10,7 @@ class Vehicle(Agent):
         self.type = type
         self.same_lane = 0
         self.last_acceleration = 0
+        self.unique_id = unique_id
 
     def advance(self):
         space_in_front = self.space_in_front()
@@ -25,10 +26,10 @@ class Vehicle(Agent):
         if self.model.road_length <= self.pos[0] + self.model.space_between_vehicles + 1:
             self.model.grid.remove_agent(self)
             self.model.schedule.remove(self)
-        else:
-            self.last_acceleration = space_in_front
-            self.same_lane += 1
-            self.move_vehicle((self.pos[0] + space_in_front, self.pos[1]))
+            return
+        self.last_acceleration = space_in_front
+        self.same_lane += 1
+        self.move_vehicle((self.pos[0] + space_in_front, self.pos[1]))
 
     def lane_switch(self, switch_space, space_in_front):
         # # 'pseudo' code to work out:
@@ -45,7 +46,6 @@ class Vehicle(Agent):
             space_above, location_above = self.space_on_side(switch_space, 1)
 
         # // If statements to determine vehicle behaviour
-        switch_lane = False
         if space_in_front < self.max_vehicle_speed and space_below and space_above:
             option = self.get_best_lane_switch
             if option == 1:
@@ -55,7 +55,7 @@ class Vehicle(Agent):
             return location_below
         elif space_in_front < self.max_vehicle_speed  and space_above:
             return location_above
-        return switch_lane
+        return False
 
     def space_in_front(self):
         return self.space_up_front(self.pos[0], self.pos[1])
