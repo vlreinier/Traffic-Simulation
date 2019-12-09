@@ -67,7 +67,7 @@ class Road(Model):
                 speed = randint(self.types[type][1][0], self.types[type][1][1])
                 lane = self.choose_lane(speed=speed)
                 if self.lane_space(lane=lane):
-                    vehicle = Vehicle(type+str(self.vehicle_id), self, speed, type)
+                    vehicle = Vehicle(self.vehicle_id, self, speed, type)
                     self.schedule.add(vehicle)
                     self.grid.place_agent(agent=vehicle, pos=(0, lane))
                     self.vehicle_id += 1

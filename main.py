@@ -13,9 +13,10 @@ def agent_portrayal(agent):
         portrayal["Shape"] = "rect"
         portrayal["Filled"] = "false"
         portrayal["Layer"] = 0
-        portrayal["w"] = 1
+        portrayal["w"] = 0.9
         portrayal["h"] = 0.9
-        portrayal['text'] = "{}".format(agent.unique_id)
+        portrayal['text'] = str(agent.unique_id)+ agent.type
+        portrayal['text_color'] = 'black'
     if isinstance(agent, Obstacle):
         portrayal["Color"] = 'grey'
         portrayal["Shape"] = 'rect'
@@ -27,13 +28,13 @@ def agent_portrayal(agent):
     return portrayal
 
 
-lanes = 6
-road_length = 80
-space_between_vehicles = 5
+max_lanes = 6
+road_length = 50
+space_between_vehicles = 3
 max_obstacles = 20
-grid = CanvasGrid(agent_portrayal, road_length, lanes, 1000, 300)
+grid = CanvasGrid(agent_portrayal, road_length, max_lanes, 1000, 300)
 
-model_params = {"lanes": UserSettableParameter("slider", "Lanes", 3, 1, lanes,
+model_params = {"lanes": UserSettableParameter("slider", "Lanes", 3, 1, max_lanes,
                                                     description=""),
                 "road_length": road_length,
                 "space_between_vehicles": space_between_vehicles,
