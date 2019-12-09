@@ -1,6 +1,6 @@
 from mesa import Agent
 from random import random, choice, randint
-
+from math import floor
 
 class Vehicle(Agent):
     def __init__(self, unique_id, model, max_vehicle_speed, type):
@@ -9,12 +9,12 @@ class Vehicle(Agent):
         self.max_vehicle_speed = max_vehicle_speed
         self.type = type
         self.same_lane = 0
-        self.switch_space = int(self.model.space_between_vehicles / 2) + 1
         self.last_acceleration = 0
 
     def advance(self):
         space_in_front = self.space_in_front()
-        switch_lane = self.lane_switch(space_in_front)
+        switch_space = floor(self.model.space_between_vehicles / 2)
+        switch_lane = self.lane_switch(switch_space, space_in_front)
         self.lane_forward(switch_lane, space_in_front)
 
     def lane_forward(self, switch_lane, space_in_front):
@@ -31,7 +31,7 @@ class Vehicle(Agent):
                 self.same_lane += 1
                 self.move_vehicle((self.pos[0] + space_in_front, self.pos[1]))
 
-    def lane_switch(self, space_in_front):
+    def lane_switch(self, switch_space, space_in_front):
         # # 'pseudo' code to work out:
         # if int(self.model.max_type_speed / 2) >= self.max_vehicle_speed:
         #     direction = probably_down or stay_in_lane
@@ -39,11 +39,11 @@ class Vehicle(Agent):
         #     direction = probably_up or stay_in_lane
 
         if self.pos[1] != 0:  # if lane is not bottom lane
-            space_below, location_below = self.space_on_side(self.switch_space, -1)
+            space_below, location_below = self.space_on_side(switch_space, -1)
         else:
             space_below, location_below = False, False
         if self.pos[1] < self.model.lanes - 1:  # if lane is not top lane
-            space_above, location_above = self.space_on_side(self.switch_space, 1)
+            space_above, location_above = self.space_on_side(switch_space, 1)
         else:
             space_above, location_above = False, False
 
