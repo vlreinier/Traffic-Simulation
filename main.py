@@ -9,7 +9,7 @@ from random import choice
 def agent_portrayal(agent):
     portrayal = {}
     if isinstance(agent, Vehicle):
-        portrayal["Color"] = 'lightgrey'
+        portrayal["Color"] = '#e9ffe1'
         portrayal["Shape"] = "rect"
         portrayal["Filled"] = "false"
         portrayal["Layer"] = 0
@@ -17,7 +17,7 @@ def agent_portrayal(agent):
         portrayal["h"] = 0.9
         portrayal['text'] = agent.type
     if isinstance(agent, Obstacle):
-        portrayal["Color"] = 'black'
+        portrayal["Color"] = 'grey'
         portrayal["Shape"] = 'rect'
         portrayal["Filled"] = "false"
         portrayal["Layer"] = 0
@@ -29,7 +29,7 @@ def agent_portrayal(agent):
 
 lanes = 6
 road_length = 50
-space_between_vehicles = 2
+space_between_vehicles = 3
 max_obstacles = 20
 grid = CanvasGrid(agent_portrayal, road_length, lanes, 1100, 300)
 
@@ -39,7 +39,7 @@ model_params = {"lanes": UserSettableParameter("slider", "Lanes", 3, 1, lanes,
                 "space_between_vehicles": space_between_vehicles,
                 "obstacles": UserSettableParameter("slider", "Random Obstacles", 2, 0, max_obstacles, 1,
                                                     description=""),
-                "vehicle_frequency": UserSettableParameter("slider", "Vehicle Frequency", 0.2, 0.05, 0.95, 0.05,
+                "vehicle_frequency": UserSettableParameter("slider", "Vehicle Frequency", 0.2, 0.05, 1, 0.05,
                                                     description="")
                 }
 
