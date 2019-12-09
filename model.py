@@ -2,8 +2,9 @@ from mesa import Model
 from mesa.time import SimultaneousActivation
 from mesa.space import Grid
 from agents import Vehicle, Obstacle
-from random import random, randint
+from random import random, randint, choice
 import numpy as np
+
 
 class Road(Model):
     def __init__(self, lanes, road_length, vehicle_frequency, space_between_vehicles, obstacles):
@@ -16,8 +17,8 @@ class Road(Model):
         self.space_between_vehicles = space_between_vehicles
         self.obstacles = obstacles
         self.running = True
-        # traffic types with: [probability, speed (in terms of cells), color]
-        self.types = {'Truck': [0.3, 1, 'grey'], 'Car': [0.5, 2, 'blue'], 'Bike': [0.2, 3, 'green']}
+        # traffic types with: [probability and speed range (in terms of cells)]
+        self.types = {'🚚': [0.25, (1, 2)], '🚌': [0.1, (1, 3)], '🚗': [0.55, (2, 5)], '🚲': [0.1, (4, 5)]}
         self.vehicle_id = 0
         self.obstacle_id = 0
         self.grid = Grid(width=self.road_length, height=self.lanes, torus=False)
@@ -28,7 +29,7 @@ class Road(Model):
         for obstacle in range(self.obstacles):
             cell = randint(int(self.road_length / 4), int(self.road_length - self.road_length / 4))
             lane = randint(0, self.lanes - 1)
-            self.grid.place_agent(agent=Obstacle(self, self.obstacle_id), pos=(cell, lane))
+            self.grid.place_agent(agent=Obstacle(self, self.obstacle_id, type=choice(['⚠️','⛔'])), pos=(cell, lane))
             self.obstacle_id += 1
 
     def choose_lane(self, speed):
@@ -62,11 +63,10 @@ class Road(Model):
         for lane in range(self.lanes):
             if random() < self.vehicle_frequency:
                 type = self.pick_random_traffic_type(self.types)
-                speed = self.types[type][1]
+                speed = randint(self.types[type][1][0], self.types[type][1][1])
                 lane = self.choose_lane(speed=speed)
-                color = self.types[type][2]
                 if self.lane_space(lane=lane):
-                    vehicle = Vehicle(type+str(self.vehicle_id), self, speed, color, type)
+                    vehicle = Vehicle(type+str(self.vehicle_id), self, speed, type)
                     self.schedule.add(vehicle)
                     self.grid.place_agent(agent=vehicle, pos=(0, lane))
                     self.vehicle_id += 1

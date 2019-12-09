@@ -1,12 +1,12 @@
 from mesa import Agent
 from random import random, choice, randint
 
+
 class Vehicle(Agent):
-    def __init__(self, unique_id, model, max_vehicle_speed, color, type):
+    def __init__(self, unique_id, model, max_vehicle_speed, type):
         """Constructor for car agent"""
         super(Vehicle, self).__init__(unique_id, model)
         self.max_vehicle_speed = max_vehicle_speed
-        self.color = color
         self.type = type
         self.same_lane = 0
         self.switch_space = int(self.model.space_between_vehicles / 2) + 1
@@ -53,9 +53,9 @@ class Vehicle(Agent):
         switch_lane = False
         space_in_front = self.space_in_front()
 
-        if space_in_front == 0 and space_below and self.last_acceleration == 0:
+        if space_in_front == 0 and space_below and self.last_acceleration == 0 and self.same_lane == 1:
             switch_lane = location_below
-        elif space_in_front == 0 and space_above and self.last_acceleration == 0:
+        elif space_in_front == 0 and space_above and self.last_acceleration == 0 and self.same_lane == 1:
             switch_lane = location_above
         elif space_in_front < self.max_vehicle_speed and self.same_lane == 5 and space_above:
             switch_lane = location_above
@@ -77,5 +77,6 @@ class Vehicle(Agent):
 
 class Obstacle(Agent):
     """Constructor for obstacle agent"""
-    def __init__(self, unique_id, model):
+    def __init__(self, unique_id, model, type):
         super(Obstacle, self).__init__(unique_id, model)
+        self.type = type
