@@ -4,7 +4,7 @@ from mesa.space import Grid
 from agents import Vehicle, Obstacle
 from random import random, randint, choice
 import numpy as np
-
+from math import floor
 
 class Road(Model):
     def __init__(self, lanes, road_length, vehicle_frequency, space_between_vehicles, obstacles):
@@ -35,10 +35,10 @@ class Road(Model):
 
     def choose_lane(self, speed):
         """Cars choose a lane by their speed"""
-        if speed <= int(len(self.types) / 2) and random() < 0.95:  # 80% chance slow cars start on lower lanes
-            return randint(0, int(self.lanes / 2))
-        if speed >= int(len(self.types) / 2) and random() < 0.70:  # 80% chance fast cars start on upper lanes
-            return randint(int(self.lanes / 2), self.lanes - 1)
+        if speed < floor(len(self.types) / 2) and random() < 0.9:  # 80% chance slow cars start on lower lanes
+            return randint(0, floor(self.lanes / 2))
+        elif speed > floor(len(self.types) / 2) and random() < 0.60:  # 80% chance fast cars start on upper lanes
+            return randint(floor(self.lanes / 2), self.lanes - 1)
         else:
             return randint(0, self.lanes - 1)
 
@@ -66,6 +66,7 @@ class Road(Model):
                 type = self.pick_random_traffic_type(self.types)
                 speed = randint(self.types[type][1][0], self.types[type][1][1])
                 lane = self.choose_lane(speed=speed)
+                print(speed, lane)
                 if self.lane_space(lane=lane):
                     vehicle = Vehicle(self.vehicle_id, self, speed, type)
                     self.schedule.add(vehicle)

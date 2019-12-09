@@ -48,7 +48,7 @@ class Vehicle(Agent):
 
         # // If statements to determine vehicle behaviour
         if space_in_front < self.max_vehicle_speed and space_below and space_above and self.same_lane == 0:
-            if self.get_best_lane_switch and (int(self.model.max_type_speed / 2) >= self.max_vehicle_speed):
+            if self.get_best_lane_switch() == 0 and (floor(self.model.max_type_speed / 2) > self.max_vehicle_speed):
                 return location_above
             return location_below
         elif space_in_front < self.max_vehicle_speed and space_below and self.same_lane == 0:
