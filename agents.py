@@ -89,7 +89,12 @@ class Vehicle(Agent):
     def space_on_side(self, spacer, lane):
         switch_locations = []
         switch_lane = True
-        for cell in range(self.pos[0] - spacer, self.pos[0] + spacer):
+        max_x = (
+            self.pos[0] + spacer 
+            if self.pos[0] + spacer < self.model.road_length 
+            else self.model.road_length 
+        )
+        for cell in range(self.pos[0] - spacer, max_x):
             if not self.model.grid.is_cell_empty((cell, self.pos[1] + lane)):
                 switch_lane = False
             switch_locations.append((cell, self.pos[1] + lane))
