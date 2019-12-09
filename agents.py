@@ -55,6 +55,8 @@ class Vehicle(Agent):
             return location_below
         elif space_in_front < self.max_vehicle_speed  and space_above:
             return location_above
+        elif self.space_up_front(self.pos[0], self.pos[1] - 1) >= self.max_vehicle_speed:
+            return location_below
         return False
 
     def space_in_front(self):
@@ -77,10 +79,11 @@ class Vehicle(Agent):
         space_above = self.space_up_front(self.pos[0], self.pos[1] + 1)
         space_below = self.space_up_front(self.pos[0], self.pos[1] - 1)
 
-        if space_above > space_below:
-            return 1
-        else:
+        # preffer lane above
+        if space_below > space_above:
             return 0
+        else:
+            return 1
 
 
     def space_on_side(self, spacer, lane):
@@ -93,7 +96,8 @@ class Vehicle(Agent):
         return switch_lane, switch_locations[int(len(switch_locations) / 2)]
 
     def move_vehicle(self, switch_location):
-        self.model.grid.move_agent(self, switch_location)
+        if self.model.grid.is_cell_empty(switch_location):
+            self.model.grid.move_agent(self, switch_location)
 
 
 class Obstacle(Agent):
