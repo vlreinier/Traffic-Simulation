@@ -55,7 +55,7 @@ class Vehicle(Agent):
             return location_below
         elif space_in_front < self.max_vehicle_speed  and space_above:
             return location_above
-        elif self.space_up_front(self.pos[0], self.pos[1] - 1) >= self.max_vehicle_speed:
+        elif self.space_up_front(self.pos[0], self.pos[1] - 1) >= self.max_vehicle_speed and space_below:
             return location_below
         return False
 
@@ -63,11 +63,11 @@ class Vehicle(Agent):
         return self.space_up_front(self.pos[0], self.pos[1])
 
     def space_up_front(self, x, y):
-        space = 0
+        space = -self.model.space_between_vehicles
         for i in range(1, self.model.road_length - x):  # remaining cells until end road
             if self.model.grid.is_cell_empty((x + i, y)):
                 space += 1
-                if space >= self.max_vehicle_speed + self.model.space_between_vehicles:
+                if space >= self.max_vehicle_speed:
                     break
             else:
                 break
