@@ -13,9 +13,9 @@ def agent_portrayal(agent):
         portrayal["Shape"] = "rect"
         portrayal["Filled"] = "false"
         portrayal["Layer"] = 0
-        portrayal["w"] = 0.9
+        portrayal["w"] = 1
         portrayal["h"] = 0.9
-        portrayal['text'] = agent.type
+        portrayal['text'] = "{}".format(agent.unique_id)
     if isinstance(agent, Obstacle):
         portrayal["Color"] = 'grey'
         portrayal["Shape"] = 'rect'
