@@ -32,6 +32,12 @@ class Vehicle(Agent):
                 self.move_vehicle((self.pos[0] + space_in_front, self.pos[1]))
 
     def lane_switch(self, space_in_front):
+        # # 'pseudo' code to work out:
+        # if int(self.model.max_type_speed / 2) >= self.max_vehicle_speed:
+        #     direction = probably_down or stay_in_lane
+        # if int(self.model.max_type_speed / 2) < self.max_vehicle_speed:
+        #     direction = probably_up or stay_in_lane
+
         if self.pos[1] != 0:  # if lane is not bottom lane
             space_below, location_below = self.space_on_side(self.switch_space, -1)
         else:
