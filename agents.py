@@ -12,6 +12,47 @@ class Vehicle(Agent):
         self.switch_space = int(self.model.space_between_vehicles / 2) + 1
         self.last_acceleration = 0
 
+    def advance(self):
+        space_in_front = self.space_in_front()
+        switch_lane = self.lane_switch(space_in_front)
+        self.lane_forward(switch_lane, space_in_front)
+
+    def lane_forward(self, switch_lane, space_in_front):
+        if switch_lane:
+            self.last_acceleration = 0
+            self.same_lane = 0
+            self.move_vehicle(switch_lane)
+        else:
+            if self.model.road_length <= self.pos[0] + self.model.space_between_vehicles + 1:
+                self.model.grid.remove_agent(self)
+                self.model.schedule.remove(self)
+            else:
+                self.last_acceleration = space_in_front
+                self.same_lane += 1
+                self.move_vehicle((self.pos[0] + space_in_front, self.pos[1]))
+
+    def lane_switch(self, space_in_front):
+        if self.pos[1] != 0:  # if lane is not bottom lane
+            space_below, location_below = self.space_on_side(self.switch_space, -1)
+        else:
+            space_below, location_below = False, False
+        if self.pos[1] < self.model.lanes - 1:  # if lane is not top lane
+            space_above, location_above = self.space_on_side(self.switch_space, 1)
+        else:
+            space_above, location_above = False, False
+
+        # // If statements to determine vehicle behaviour
+        switch_lane = False
+        if space_in_front == 0 and space_below and self.last_acceleration == 0 and self.same_lane == 1:
+            switch_lane = location_below
+        elif space_in_front == 0 and space_above and self.last_acceleration == 0 and self.same_lane == 1:
+            switch_lane = location_above
+        elif space_in_front < self.max_vehicle_speed and self.same_lane == 5 and space_above:
+            switch_lane = location_above
+        elif space_below and space_in_front == self.max_vehicle_speed and self.same_lane == 5:
+            switch_lane = location_below
+        return switch_lane
+
     def space_in_front(self):
         space = 0
         for i in range(1, self.model.road_length - self.pos[0]):  # remaining cells until end road
@@ -39,41 +80,6 @@ class Vehicle(Agent):
     def move_vehicle(self, switch_location):
         self.model.grid.move_agent(self, switch_location)
 
-    def advance(self):
-        if self.pos[1] != 0:  # if lane is not bottom lane
-            space_below, location_below = self.space_on_side(self.switch_space, -1)
-        else:
-            space_below, location_below = False, False
-        if self.pos[1] < self.model.lanes -1:  # if lane is not top lane
-            space_above, location_above = self.space_on_side(self.switch_space, 1)
-        else:
-            space_above, location_above = False, False
-
-        # // If statements to determine vehicle behaviour
-        switch_lane = False
-        space_in_front = self.space_in_front()
-
-        if space_in_front == 0 and space_below and self.last_acceleration == 0 and self.same_lane == 1:
-            switch_lane = location_below
-        elif space_in_front == 0 and space_above and self.last_acceleration == 0 and self.same_lane == 1:
-            switch_lane = location_above
-        elif space_in_front < self.max_vehicle_speed and self.same_lane == 5 and space_above:
-            switch_lane = location_above
-        elif space_below and space_in_front == self.max_vehicle_speed and self.same_lane == 5:
-            switch_lane = location_below
-
-        if switch_lane:
-            self.last_acceleration = 0
-            self.same_lane = 0
-            self.move_vehicle(switch_lane)
-        else:
-            if self.model.road_length <= self.pos[0] + self.model.space_between_vehicles + 1:
-                self.model.grid.remove_agent(self)
-                self.model.schedule.remove(self)
-            else:
-                self.last_acceleration = space_in_front
-                self.same_lane += 1
-                self.move_vehicle((self.pos[0] + space_in_front, self.pos[1]))
 
 class Obstacle(Agent):
     """Constructor for obstacle agent"""
