@@ -14,8 +14,8 @@ class Vehicle(Agent):
 
     def advance(self):
         space_in_front = self.space_in_front()
-        switch_space = floor(self.model.space_between_vehicles / 2)
-        switch_lane = self.lane_switch(switch_space, space_in_front)
+        space_on_front_and_back = floor(self.model.space_between_vehicles / 2)
+        switch_lane = self.lane_switch(space_on_front_and_back, space_in_front)
         self.lane_forward(switch_lane, space_in_front)
 
     def lane_forward(self, switch_lane, space_in_front):
@@ -29,6 +29,7 @@ class Vehicle(Agent):
             return
         self.last_acceleration = space_in_front
         self.same_lane += 1
+        if self.same_lane == 3: self.same_lane = 0
         self.move_vehicle((self.pos[0] + space_in_front, self.pos[1]))
 
     def lane_switch(self, switch_space, space_in_front):
@@ -46,16 +47,16 @@ class Vehicle(Agent):
             space_above, location_above = self.space_on_side(switch_space, 1)
 
         # // If statements to determine vehicle behaviour
-        if space_in_front < self.max_vehicle_speed and space_below and space_above:
-            option = self.get_best_lane_switch
-            if option == 1:
+        if space_in_front < self.max_vehicle_speed and space_below and space_above and self.same_lane == 0:
+            if self.get_best_lane_switch and (int(self.model.max_type_speed / 2) >= self.max_vehicle_speed):
                 return location_above
             return location_below
-        elif space_in_front < self.max_vehicle_speed and space_below:
+        elif space_in_front < self.max_vehicle_speed and space_below and self.same_lane == 0:
             return location_below
-        elif space_in_front < self.max_vehicle_speed  and space_above:
+        elif space_in_front < self.max_vehicle_speed  and space_above and self.same_lane == 0:
             return location_above
-        elif self.space_up_front(self.pos[0], self.pos[1] - 1) >= self.max_vehicle_speed and space_below:
+        elif self.space_up_front(self.pos[0], self.pos[1] - 1) >= self.max_vehicle_speed and \
+                space_below and self.same_lane == 0:
             return location_below
         return False
 
@@ -79,7 +80,7 @@ class Vehicle(Agent):
         space_above = self.space_up_front(self.pos[0], self.pos[1] + 1)
         space_below = self.space_up_front(self.pos[0], self.pos[1] - 1)
 
-        # preffer lane above
+        # prefer lane above
         if space_below > space_above:
             return 0
         else:

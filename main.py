@@ -30,7 +30,7 @@ def agent_portrayal(agent):
 
 max_lanes = 6
 road_length = 50
-space_between_vehicles = 3
+space_between_vehicles = 4
 max_obstacles = 20
 grid = CanvasGrid(agent_portrayal, road_length, max_lanes, 1000, 300)
 
