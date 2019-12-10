@@ -14,7 +14,7 @@ class Vehicle(Agent):
 
     def advance(self):
         space_in_front = self.space_in_front()
-        space_on_front_and_back = int(self.model.space_between_vehicles / 2) + 1
+        space_on_front_and_back = int(self.model.space_between_vehicles / 2)
         switch_lane = self.lane_switch(space_on_front_and_back, space_in_front)
         self.lane_forward(switch_lane, space_in_front)
 
@@ -97,7 +97,7 @@ class Vehicle(Agent):
             if self.pos[0] + spacer < self.model.road_length 
             else self.model.road_length 
         )
-        for cell in range(self.pos[0] - spacer, max_x):
+        for cell in range(self.pos[0] - spacer -1, max_x + 1):
             if not self.model.grid.is_cell_empty((cell, self.pos[1] + lane)):
                 switch_lane = False
             switch_locations.append((cell, self.pos[1] + lane))
