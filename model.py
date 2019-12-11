@@ -28,12 +28,8 @@ class Road(Model):
 
     def place_obstacles(self):
         """Places given number of random obstacles on grid"""
-        self.obstacles = [
-            (int(self.road_length / 2), 2),
-            (int(self.road_length - (self.road_length / 4)), 0),
-        ]
         for obstacle in self.obstacles:
-            self.grid.place_agent(agent=Obstacle(self, self.obstacle_id, type=choice(['⚠️','⛔'])), pos=(obstacle[0], obstacle[1]))
+            self.grid.place_agent(agent=Obstacle(self, self.obstacle_id, type=choice(['⚠️','⛔'])), pos=(int(self.road_length / 2), obstacle))
             self.obstacle_id += 1
 
     def choose_lane(self, speed):
@@ -78,7 +74,7 @@ class Road(Model):
         df = self.datacollector.get_model_vars_dataframe()
         if len(df) % 100 == 0:
             csv = df.to_csv(index=False)
-            with open("string_{}.csv".format(len(df)), "w") as file:
+            with open("properties_{}.csv".format(len(df)), "w") as file:
                 file.write(csv)
             
         for lane in range(self.lanes):
