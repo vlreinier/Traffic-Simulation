@@ -1,6 +1,8 @@
 from server import Server
 from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.UserParam import UserSettableParameter
+from mesa.visualization.modules.ChartVisualization import ChartModule
+from mesa.datacollection import DataCollector
 from model import Road
 from agents import Vehicle, Obstacle
 from random import choice
@@ -32,8 +34,10 @@ max_lanes = 6
 road_length = 50
 space_between_vehicles = 3
 max_obstacles = 20
+datacollector = DataCollector(model_reporters={"agent_count": lambda m: m.schedule.get_agent_count(), "speed": lambda m: m.get_avg_speed})
 grid = CanvasGrid(agent_portrayal, road_length, max_lanes, 1000, 300)
-
+chart_agents = ChartModule([{"Label": "agent_count", "Color": "red"}], data_collector_name="datacollector")
+chart_speed = ChartModule([{"Label": "speed", "Color": "black"}], data_collector_name="datacollector")
 model_params = {"lanes": UserSettableParameter("slider", "Lanes", 3, 1, max_lanes,
                                                     description=""),
                 "road_length": road_length,
@@ -41,11 +45,12 @@ model_params = {"lanes": UserSettableParameter("slider", "Lanes", 3, 1, max_lane
                 "obstacles": UserSettableParameter("slider", "Random Obstacles", 2, 0, max_obstacles, 1,
                                                     description=""),
                 "vehicle_frequency": UserSettableParameter("slider", "Vehicle Frequency", 0.2, 0.05, 1, 0.05,
-                                                    description="")
+                                                    description=""),
+                "datacollector": datacollector
                 }
 
 server = Server(Road,
-                [grid],
+                [grid, chart_agents, chart_speed],
                 "Road Model",
                 model_params)
 server.launch(8521)

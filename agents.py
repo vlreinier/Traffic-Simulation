@@ -11,6 +11,7 @@ class Vehicle(Agent):
         self.same_lane = 0
         self.last_acceleration = 0
         self.unique_id = unique_id
+        self.speed = 0
 
     def advance(self):
         space_in_front = self.space_in_front()
@@ -44,7 +45,7 @@ class Vehicle(Agent):
             space_below, location_below = self.space_on_side(switch_space, -1)
         if self.pos[1] < self.model.lanes - 1:  # if lane is not top lane
             space_above, location_above = self.space_on_side(switch_space, 1)
-
+        space_to_the_right = self.space_up_front(self.pos[0], self.pos[1] - 1)
         # // If statements to determine vehicle behaviour
         if space_in_front < self.max_vehicle_speed and space_below and space_above and \
                 (self.same_lane == 0 or (self.last_acceleration == 0 and self.same_lane % 2 == 0)):
@@ -105,6 +106,7 @@ class Vehicle(Agent):
 
     def move_vehicle(self, switch_location):
         if self.model.grid.is_cell_empty(switch_location):
+            self.speed = switch_location[0] - self.pos[0]
             self.model.grid.move_agent(self, switch_location)
 
 

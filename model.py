@@ -7,11 +7,12 @@ import numpy as np
 from math import floor
 
 class Road(Model):
-    def __init__(self, lanes, road_length, vehicle_frequency, space_between_vehicles, obstacles):
+    def __init__(self, lanes, road_length, vehicle_frequency, space_between_vehicles, obstacles, datacollector):
         """Constructor for the Road, the model for this agent-based simulation, 'housing' the agents,
         and setting up and configuring the simulation"""
         self.schedule = SimultaneousActivation(self)
         self.lanes = lanes
+        self.datacollector = datacollector
         self.road_length = road_length
         self.vehicle_frequency = vehicle_frequency
         self.space_between_vehicles = space_between_vehicles
@@ -27,10 +28,12 @@ class Road(Model):
 
     def place_obstacles(self):
         """Places given number of random obstacles on grid"""
-        for obstacle in range(self.obstacles):
-            cell = randint(int(self.road_length / 4), int(self.road_length - self.road_length / 4))
-            lane = randint(0, self.lanes - 1)
-            self.grid.place_agent(agent=Obstacle(self, self.obstacle_id, type=choice(['⚠️','⛔'])), pos=(cell, lane))
+        self.obstacles = [
+            (int(self.road_length / 2), 2),
+            (int(self.road_length - (self.road_length / 4)), 0),
+        ]
+        for obstacle in self.obstacles:
+            self.grid.place_agent(agent=Obstacle(self, self.obstacle_id, type=choice(['⚠️','⛔'])), pos=(obstacle[0], obstacle[1]))
             self.obstacle_id += 1
 
     def choose_lane(self, speed):
@@ -58,9 +61,26 @@ class Road(Model):
             probabilities.append(info[0])
         return np.random.choice(types, 1, p=probabilities)[0]
 
+    @property
+    def get_avg_speed(self):
+        total_speed = 0
+        for agent in self.schedule.agents:
+            total_speed += agent.speed
+        if total_speed == 0:
+            return 0
+        return total_speed / len(self.schedule.agents)
+        
+
     def step(self):
         """Step function for simultaneous activation agents"""
         self.schedule.step()
+        self.datacollector.collect(self)
+        df = self.datacollector.get_model_vars_dataframe()
+        if len(df) % 100 == 0:
+            csv = df.to_csv(index=False)
+            with open("string_{}.csv".format(len(df)), "w") as file:
+                file.write(csv)
+            
         for lane in range(self.lanes):
             if random() < self.vehicle_frequency:
                 type = self.pick_random_traffic_type(self.types)
