@@ -52,7 +52,7 @@ model_params = {
     "road_length": road_length,
     "space_between_vehicles": space_between_vehicles,
     "obstacles": UserSettableParameter(
-        "choice", "Vehicle Frequency", value=0, choices=[0, 1, 2], description=""
+        "choice", "obstacle baan", value=0, choices=[0, 1, 2], description=""
     ),
     "vehicle_frequency": UserSettableParameter(
         "choice", "Vehicle Frequency", value=0.05, choices=[0.05, 0.2, 0.5, 0.7], description=""
