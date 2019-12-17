@@ -45,7 +45,7 @@ fixed_params = {
 }
 
 variable_params = {
-    "obstacle_lane": [None, 0, 1, 2],
+    "obstacle_lane": [-1, 0, 1, 2],
     "vehicle_frequency": [0.05, 0.2, 0.5, 0.7]
     }
 
@@ -53,7 +53,7 @@ batch_run = BatchRunner(
     Road,
     variable_params,
     fixed_params,
-    iterations=100,
+    iterations=10,
     max_steps=1000,
     model_reporters={"agent_count": get_agent_counts,
                      "speed": get_avg_speed}
@@ -61,4 +61,5 @@ batch_run = BatchRunner(
 
 batch_run.run_all()
 run_data = batch_run.get_model_vars_dataframe()
+run_data = run_data.groupby('obstacle_lane').mean()
 print(run_data)

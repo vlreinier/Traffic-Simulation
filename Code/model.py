@@ -18,7 +18,8 @@ class Road(Model):
         self.obstacle_lane = obstacle_lane
         self.running = True
         # traffic types with: [probability and speed range (in terms of cells)]
-        self.types = {'🚚': [0.35, (1, 1)], '🚌': [0.1, (1, 2)], '🚗': [0.55, (2, 3)]}
+        # self.types = {'🚚': [0.35, (1, 1)], '🚌': [0.1, (1, 2)], '🚗': [0.55, (2, 3)]}
+        self.types = {'🚗': [1, (1, 1)]}
         self.max_type_speed = max([speed for type in self.types for speed in self.types[type][1]])
         self.vehicle_id = 0
         self.obstacle_id = 0
@@ -27,7 +28,7 @@ class Road(Model):
 
     def place_obstacles(self):
         """Places given number of random obstacles on grid"""
-        if not self.obstacle_lane is None:
+        if self.obstacle_lane != -1:
             self.grid.place_agent(agent=Obstacle(self, self.obstacle_id, type=choice(['⚠️','⛔'])),
                                   pos=(int(self.road_length / 2), self.obstacle_lane))
             self.obstacle_id += 1

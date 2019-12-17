@@ -1,6 +1,5 @@
 from mesa import Agent
 from random import random, choice, randint
-from math import floor
 
 
 class Vehicle(Agent):
