@@ -44,7 +44,7 @@ fixed_params = {
 }
 
 variable_params = {
-    "obstacles": [False, 0, 1, 2],
+    "obstacles": [None, 0, 1, 2],
     "vehicle_frequency": [0.05, 0.2, 0.5, 0.7]
     }
 

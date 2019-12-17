@@ -24,15 +24,15 @@ class Vehicle(Agent):
         if switch_lane:
             self.same_lane = 0
             self.move_vehicle(switch_lane)
-        if self.model.road_length <= self.pos[0] + self.model.space_between_vehicles + 1:
+        elif self.model.road_length <= self.pos[0] + self.model.space_between_vehicles + 1:
             self.model.grid.remove_agent(self)
             self.model.schedule.remove(self)
-            return
-        self.last_acceleration = space_in_front
-        self.same_lane += 1
-        if self.same_lane == 5:
-            self.same_lane = 0
-        self.move_vehicle((self.pos[0] + space_in_front, self.pos[1]))
+        else:
+            self.last_acceleration = space_in_front
+            self.same_lane += 1
+            if self.same_lane == 5:
+                self.same_lane = 0
+            self.move_vehicle((self.pos[0] + space_in_front, self.pos[1]))
 
     def lane_switch(self, switch_space, space_in_front):
         space_below, location_below = False, False
