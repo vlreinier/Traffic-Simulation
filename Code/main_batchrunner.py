@@ -60,4 +60,3 @@ batch_run = BatchRunner(
 
 batch_run.run_all()
 run_data = batch_run.get_model_vars_dataframe()
-print(run_data)
