@@ -1,11 +1,6 @@
-from server import Server
-from mesa.visualization.modules import CanvasGrid, ChartModule
-from mesa.visualization.UserParam import UserSettableParameter
-from mesa.visualization.modules.ChartVisualization import ChartModule
-from mesa.datacollection import DataCollector
 from model import Road
 from agents import Vehicle, Obstacle
-from random import choice
+from mesa.batchrunner import BatchRunner
 
 
 def agent_portrayal(agent):
@@ -29,35 +24,40 @@ def agent_portrayal(agent):
         portrayal["text"] = agent.type
     return portrayal
 
+def get_avg_speed(model):
+    total_speed = 0
+    for agent in model.schedule.agents:
+        total_speed += agent.speed
+    if total_speed == 0:
+        return 0
+    return total_speed / len(model.schedule.agents)
 
-max_lanes = 6
-road_length = 50
-space_between_vehicles = 3
-max_obstacles = 20
-datacollector = DataCollector(
-    model_reporters={
-        "agent_count": lambda m: m.schedule.get_agent_count(),
-        "speed": lambda m: m.get_avg_speed,
-    }
-)
-grid = CanvasGrid(agent_portrayal, road_length, max_lanes, 1000, 300)
-chart_agents = ChartModule(
-    [{"Label": "agent_count", "Color": "red"}], data_collector_name="datacollector"
-)
-chart_speed = ChartModule(
-    [{"Label": "speed", "Color": "black"}], data_collector_name="datacollector"
-)
-model_params = {
+def get_agent_counts(model):
+    return model.schedule.get_agent_count()
+
+
+
+fixed_params = {
+    "road_length": 50,
+    "space_between_vehicles": 3,
     "lanes": 3,
-    "road_length": road_length,
-    "space_between_vehicles": space_between_vehicles,
-    "obstacles": UserSettableParameter(
-        "choice", "obstacle baan", value=0, choices=[0, 1, 2], description=""
-    ),
-    "vehicle_frequency": UserSettableParameter(
-        "choice", "Vehicle Frequency", value=0.05, choices=[0.05, 0.2, 0.5, 0.7], description=""
-    ),
-    "datacollector": datacollector,
 }
-server = Server(Road, [grid, chart_agents, chart_speed], "Road Model", model_params)
-server.launch(8521)
+
+variable_params = {
+    "obstacles": [0, 1, 2, 3],  # 0 is no obstacle (-1 for lane)
+    "vehicle_frequency": [0.05, 0.2, 0.5, 0.7]
+    }
+
+batch_run = BatchRunner(
+    Road,
+    variable_params,
+    fixed_params,
+    iterations=1,
+    max_steps=1000,
+    model_reporters={"agent_count": get_agent_counts,
+                     "speed": get_avg_speed}
+)
+
+batch_run.run_all()
+run_data = batch_run.get_model_vars_dataframe()
+print(run_data)

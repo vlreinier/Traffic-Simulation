@@ -8,10 +8,10 @@ class Vehicle(Agent):
         """Constructor for car agent"""
         super(Vehicle, self).__init__(unique_id, model)
         self.max_vehicle_speed = max_vehicle_speed
+        self.unique_id = unique_id
         self.type = type
         self.same_lane = 0
         self.last_acceleration = 0
-        self.unique_id = unique_id
         self.speed = 0
 
     def advance(self):
@@ -35,11 +35,6 @@ class Vehicle(Agent):
         self.move_vehicle((self.pos[0] + space_in_front, self.pos[1]))
 
     def lane_switch(self, switch_space, space_in_front):
-        # # 'pseudo' code to work out:
-        # if int(self.model.max_type_speed / 2) >= self.max_vehicle_speed:
-        #     direction = probably_down or stay_in_lane
-        # if int(self.model.max_type_speed / 2) < self.max_vehicle_speed:
-        #     direction = probably_up or stay_in_lane
         space_below, location_below = False, False
         space_above, location_above = False, False
 
@@ -95,7 +90,7 @@ class Vehicle(Agent):
         if space > 0:
             return space
         return 0
-
+    
     def get_best_lane_switch(self):
         space_above = self.space_up_front(self.pos[0], self.pos[1] + 1)
         space_below = self.space_up_front(self.pos[0], self.pos[1] - 1)
