@@ -90,7 +90,7 @@ class Vehicle(Agent):
         if space > 0:
             return space
         return 0
-    
+
     def get_best_lane_switch(self):
         space_above = self.space_up_front(self.pos[0], self.pos[1] + 1)
         space_below = self.space_up_front(self.pos[0], self.pos[1] - 1)

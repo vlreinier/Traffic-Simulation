@@ -27,9 +27,9 @@ class Road(Model):
 
     def place_obstacles(self):
         """Places given number of random obstacles on grid"""
-        if self.obstacles != 0:
+        if self.obstacles:
             self.grid.place_agent(agent=Obstacle(self, self.obstacle_id, type=choice(['⚠️','⛔'])),
-                                  pos=(int(self.road_length / 2), self.obstacles-1))
+                                  pos=(int(self.road_length / 2), self.obstacles))
             self.obstacle_id += 1
 
     def choose_lane(self, speed):

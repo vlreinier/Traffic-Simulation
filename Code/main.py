@@ -44,7 +44,7 @@ fixed_params = {
 }
 
 variable_params = {
-    "obstacles": [0, 1, 2, 3],  # 0 is no obstacle (-1 for lane)
+    "obstacles": [False, 0, 1, 2],
     "vehicle_frequency": [0.05, 0.2, 0.5, 0.7]
     }
 
@@ -52,7 +52,7 @@ batch_run = BatchRunner(
     Road,
     variable_params,
     fixed_params,
-    iterations=1,
+    iterations=10,
     max_steps=1000,
     model_reporters={"agent_count": get_agent_counts,
                      "speed": get_avg_speed}
