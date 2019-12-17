@@ -7,7 +7,7 @@ import numpy as np
 
 
 class Road(Model):
-    def __init__(self, lanes, road_length, vehicle_frequency, space_between_vehicles, obstacles):
+    def __init__(self, lanes, road_length, vehicle_frequency, space_between_vehicles, obstacle_lane):
         """Constructor for the Road, the model for this agent-based simulation, 'housing' the agents,
         and setting up and configuring the simulation"""
         self.schedule = SimultaneousActivation(self)
@@ -15,7 +15,7 @@ class Road(Model):
         self.road_length = road_length
         self.vehicle_frequency = vehicle_frequency
         self.space_between_vehicles = space_between_vehicles
-        self.obstacles = obstacles
+        self.obstacle_lane = obstacle_lane
         self.running = True
         # traffic types with: [probability and speed range (in terms of cells)]
         self.types = {'🚚': [0.35, (1, 1)], '🚌': [0.1, (1, 2)], '🚗': [0.55, (2, 3)]}
@@ -27,16 +27,16 @@ class Road(Model):
 
     def place_obstacles(self):
         """Places given number of random obstacles on grid"""
-        if not self.obstacles is None:
+        if not self.obstacle_lane is None:
             self.grid.place_agent(agent=Obstacle(self, self.obstacle_id, type=choice(['⚠️','⛔'])),
-                                  pos=(int(self.road_length / 2), self.obstacles))
+                                  pos=(int(self.road_length / 2), self.obstacle_lane))
             self.obstacle_id += 1
 
     def choose_lane(self, speed):
         """Cars choose a lane by their speed"""
-        if speed < int(len(self.types) / 2) and random() < 0.9:  # 80% chance slow cars start on lower lanes
+        if speed <= int(len(self.types) / 2):
             return randint(0, int(self.lanes / 2))
-        elif speed > int(len(self.types) / 2) and random() < 0.60:  # 80% chance fast cars start on upper lanes
+        elif speed > int(len(self.types) / 2):
             return randint(int(self.lanes / 2), self.lanes - 1)
         else:
             return randint(0, self.lanes - 1)

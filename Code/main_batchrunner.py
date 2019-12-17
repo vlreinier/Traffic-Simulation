@@ -24,6 +24,7 @@ def agent_portrayal(agent):
         portrayal["text"] = agent.type
     return portrayal
 
+
 def get_avg_speed(model):
     total_speed = 0
     for agent in model.schedule.agents:
@@ -32,19 +33,19 @@ def get_avg_speed(model):
         return 0
     return total_speed / len(model.schedule.agents)
 
+
 def get_agent_counts(model):
     return model.schedule.get_agent_count()
 
 
-
 fixed_params = {
-    "road_length": 50,
+    "road_length": 100,
     "space_between_vehicles": 3,
     "lanes": 3,
 }
 
 variable_params = {
-    "obstacles": [None, 0, 1, 2],
+    "obstacle_lane": [None, 0, 1, 2],
     "vehicle_frequency": [0.05, 0.2, 0.5, 0.7]
     }
 
@@ -52,7 +53,7 @@ batch_run = BatchRunner(
     Road,
     variable_params,
     fixed_params,
-    iterations=10,
+    iterations=100,
     max_steps=1000,
     model_reporters={"agent_count": get_agent_counts,
                      "speed": get_avg_speed}
@@ -60,3 +61,4 @@ batch_run = BatchRunner(
 
 batch_run.run_all()
 run_data = batch_run.get_model_vars_dataframe()
+print(run_data)

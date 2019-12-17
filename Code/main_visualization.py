@@ -29,16 +29,12 @@ def agent_portrayal(agent):
     return portrayal
 
 
-max_lanes = 6
-road_length = 50
-space_between_vehicles = 3
-
-grid = CanvasGrid(agent_portrayal, road_length, max_lanes, 1000, 300)
+grid = CanvasGrid(agent_portrayal, 100, 3, 1000, 300)
 model_params = {
     "lanes": 3,
-    "road_length": road_length,
-    "space_between_vehicles": space_between_vehicles,
-    "obstacles": UserSettableParameter(
+    "road_length": 100,
+    "space_between_vehicles": 3,
+    "obstacle_lane": UserSettableParameter(
         "choice", "obstacle baan", value=0, choices=[0, 1, 2], description=""
     ),
     "vehicle_frequency": UserSettableParameter(
