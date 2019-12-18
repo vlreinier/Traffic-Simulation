@@ -1,7 +1,7 @@
 from model import Road
 from agents import Vehicle, Obstacle
 from mesa.batchrunner import BatchRunner
-
+import timeit
 
 def agent_portrayal(agent):
     portrayal = {}
@@ -45,7 +45,7 @@ fixed_params = {
 }
 
 variable_params = {
-    "obstacle_lane": [-1, 0, 1, 2],
+    "obstacle_lane": ['nulmeting', 0, 1, 2],
     "vehicle_frequency": [0.05, 0.2, 0.5, 0.7]
     }
 
@@ -53,12 +53,11 @@ batch_run = BatchRunner(
     Road,
     variable_params,
     fixed_params,
-    iterations=10,
+    iterations=50,
     max_steps=1000,
-    model_reporters={"agent_count": get_agent_counts,
-                     "speed": get_avg_speed}
+    model_reporters={"agent_count": get_agent_counts, "speed": get_avg_speed}
 )
 
 batch_run.run_all()
 run_data = batch_run.get_model_vars_dataframe()
-run_data.to_csv("results.csv")
+run_data.to_csv("C:\\GitHub\\Traffic-Simulation\\Data\\results.csv")
