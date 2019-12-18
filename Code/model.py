@@ -17,8 +17,6 @@ class Road(Model):
         self.space_between_vehicles = space_between_vehicles
         self.obstacle_lane = obstacle_lane
         self.running = True
-        # traffic types with: [probability and speed range (in terms of cells)]
-        # self.types = {'🚚': [0.35, (1, 1)], '🚌': [0.1, (1, 2)], '🚗': [0.55, (2, 3)]}
         self.types = {'🚗': [1, (1, 1)]}
         self.max_type_speed = max([speed for type in self.types for speed in self.types[type][1]])
         self.vehicle_id = 0

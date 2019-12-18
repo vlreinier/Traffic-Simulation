@@ -61,5 +61,4 @@ batch_run = BatchRunner(
 
 batch_run.run_all()
 run_data = batch_run.get_model_vars_dataframe()
-run_data = run_data.groupby('obstacle_lane').mean()
-print(run_data)
+run_data.to_csv("results.csv")
