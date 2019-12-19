@@ -60,4 +60,8 @@ batch_run = BatchRunner(
 
 batch_run.run_all()
 run_data = batch_run.get_model_vars_dataframe()
-run_data.to_csv("C:\\GitHub\\Traffic-Simulation\\Data\\results.csv")
+
+# Always use forward slash instead of backslash
+# Never use an absolute path because thats for every user different
+# ../ goes to the directory up from where this file is located
+run_data.to_csv("../Data/results.csv")
